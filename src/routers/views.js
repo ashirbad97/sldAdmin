@@ -1,4 +1,7 @@
 const express = require('express')
+const bodyParser = require('body-parser');
+const passwordGenerator = require('generate-password');
+const nodemailer = require('nodemailer');
 const router = new express.Router()
 const Patient = require('../models/patients')
 // const auth = require('../middleware/authentication')
@@ -7,6 +10,7 @@ const SubModule = require('../models/subModules')
 const Word = require('../models/words')
 const Session = require('../models/session')
 const Score = require('../models/score')
+
 
 
 // Different Categrory Router
@@ -24,20 +28,66 @@ router.get('/', async (req, res) => {
 
 router.post('/addPatientFormData', async (req, res) => {
     try {
-        currentLevel = await GameLevel.findLevelOne()
-        currentLevel = currentLevel._id
+        currentLevel = await GameLevel.findLevelOne();
+        currentLevel = currentLevel._id;
+        const practitionerEmail = "defozex47@gmail.com";
+
+        // Generate a random password
+        const generatedPassword = passwordGenerator.generate({
+            length: 10,
+            numbers: true,
+            uppercase: true,
+            lowercase: true,
+            symbols: false
+        });
+
+
+        // Save the patient with the generated password
         const patient = new Patient({
             ...req.body,
+            password: generatedPassword,
             currentLevel
-        })
-        await patient.save()
-        credentials = await Patient.findOne({ patientId: req.body.patientId }).select('patientId password')
-        res.status(200).send(credentials)
+        });
+        await patient.save();
+        credentials = await Patient.findOne({ patientId: req.body.patientId }).select('patientId password');
+
+        // Set up the email transporter
+        let transporter = nodemailer.createTransport({
+            service: 'outlook',
+            auth: {
+                user: 'sldwebapp@outlook.com', // Replace with your email
+                pass: 'farziemail@474' // Replace with your email password
+            }
+        });
+
+        // Email options
+        let mailOptions = {
+            from: 'sldwebapp@outlook.com', // Replace with your email
+            to: practitionerEmail,
+            subject: 'Your Patient Account Details',
+            text: `Welcome! Here are the account details for the newly registered patient:
+
+Username: ${req.body.patientId}
+Password: ${generatedPassword}
+
+Please keep these credentials safe and do not share them with anyone.`
+        };
+
+        // Send the email
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log('Error sending email: ', error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
+        res.status(200).send(credentials);
+    } catch (error) {
+        console.log(error);
     }
-    catch (error) {
-        console.log(error)
-    }
-})
+});
+
 
 router.post('/', async (req, res) => {
     try {
