@@ -28,11 +28,19 @@ router.get('/', async (req, res) => {
 
 router.post('/addPatientFormData', async (req, res) => {
     try {
+
+        //Check if the keyphrase is correct, if not, return an error. This is to prevent unauthorized users from registering patients.
+        const storedKeyphrase = "thisIsATestKeyphrase"; 
+        if (req.body.keyphrase !== storedKeyphrase) {
+            return res.status(401).send({ error: 'Invalid keyphrase.' });
+        }
+
         currentLevel = await GameLevel.findLevelOne();
         currentLevel = currentLevel._id;
+        //set this variable to the email of the practitioner
         const practitionerEmail = "defozex47@gmail.com";
 
-        // Generate a random password
+        //Generates a random password
         const generatedPassword = passwordGenerator.generate({
             length: 10,
             numbers: true,
@@ -42,7 +50,7 @@ router.post('/addPatientFormData', async (req, res) => {
         });
 
 
-        // Save the patient with the generated password
+        //Save the patient with the generated password
         const patient = new Patient({
             ...req.body,
             password: generatedPassword,
@@ -51,29 +59,29 @@ router.post('/addPatientFormData', async (req, res) => {
         await patient.save();
         credentials = await Patient.findOne({ patientId: req.body.patientId }).select('patientId password');
 
-        // Set up the email transporter
+        //Set up the email transporter
         let transporter = nodemailer.createTransport({
             service: 'outlook',
             auth: {
-                user: 'sldwebapp@outlook.com', // Replace with your email
-                pass: 'farziemail@474' // Replace with your email password
+                user: 'sldwebapp@outlook.com', //Replace with the email you want to send from
+                pass: 'farziemail@474' //Password for the email
             }
         });
 
-        // Email options
+        //Email options
         let mailOptions = {
-            from: 'sldwebapp@outlook.com', // Replace with your email
+            from: 'sldwebapp@outlook.com', //Replace with the email you want to send from
             to: practitionerEmail,
-            subject: 'Your Patient Account Details',
+            subject: 'Patient Account Details',
             text: `Welcome! Here are the account details for the newly registered patient:
 
-Username: ${req.body.patientId}
-Password: ${generatedPassword}
+                    Username: ${req.body.patientId}
+                    Password: ${generatedPassword}
 
-Please keep these credentials safe and do not share them with anyone.`
+                    Please keep these credentials safe and do not share them with anyone.`
         };
 
-        // Send the email
+        //Send the email
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.log('Error sending email: ', error);

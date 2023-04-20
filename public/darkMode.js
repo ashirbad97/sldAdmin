@@ -1,4 +1,4 @@
-// Dark mode toggle
+//Dark mode toggle
 document.addEventListener('DOMContentLoaded', () => {
   const darkModeToggle = document.getElementById('darkModeToggle');
   const body = document.body;
@@ -17,13 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener("DOMContentLoaded", () => {
   const patientForm = document.getElementById("patientForm");
   
+  //Handle form submission
   patientForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const formData = new FormData(patientForm);
     const data = Object.fromEntries(formData.entries());
 
-    // Parse tokens input as an array of objects
+    //Parse tokens input as an array of objects
     data.tokens = data.tokens.split(',').map(token => ({ token: token.trim() }));
 
     try {
@@ -35,9 +36,15 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(data),
       });
 
-      if (response.ok) {
+      const responseData = await response.json();
+
+      //Handle response
+      if (response.status === 200) {
         alert("Form submitted successfully.");
         patientForm.reset();
+      //Keyphrase validation failed
+      } else if (response.status === 401) {
+        alert(responseData.error);
       } else {
         alert("Failed to submit the form. Please try again.");
       }
