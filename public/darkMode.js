@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const patientForm = document.getElementById("patientForm");
-  
+
   //Handle form submission
   patientForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -40,9 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       //Handle response
       if (response.status === 200) {
-        alert("Form submitted successfully.");
+        if (responseData.emailStatus === "Success") {
+          alert("Form submitted successfully. Email sent.");
+        } else {
+          alert("Form submitted successfully. Failed to send email.");
+        }
         patientForm.reset();
-      //Keyphrase validation failed
       } else if (response.status === 401) {
         alert(responseData.error);
       } else {
@@ -54,4 +57,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-

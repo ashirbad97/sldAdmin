@@ -73,7 +73,7 @@ router.post('/addPatientFormData', async (req, res) => {
             from: 'sldwebapp@outlook.com', //Replace with the email you want to send from
             to: practitionerEmail,
             subject: 'Patient Account Details',
-            text: `Welcome! Here are the account details for the newly registered patient:
+            text: `Here are the account details for the newly registered patient:
 
                     Username: ${req.body.patientId}
                     Password: ${generatedPassword}
@@ -81,16 +81,17 @@ router.post('/addPatientFormData', async (req, res) => {
                     Please keep these credentials safe and do not share them with anyone.`
         };
 
-        //Send the email
+        //send the email and return the response
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.log('Error sending email: ', error);
+                res.status(400).send({ emailStatus: 'Failed', credentials });
             } else {
                 console.log('Email sent: ' + info.response);
+                res.status(200).send({ emailStatus: 'Success', credentials });
             }
         });
 
-        res.status(200).send(credentials);
     } catch (error) {
         console.log(error);
     }
