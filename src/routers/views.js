@@ -46,7 +46,7 @@ router.post('/addPatientFormData', async (req, res) => {
             numbers: true,
             uppercase: true,
             lowercase: true,
-            symbols: false
+            symbols: true
         });
 
 
@@ -61,16 +61,16 @@ router.post('/addPatientFormData', async (req, res) => {
 
         //Set up the email transporter
         let transporter = nodemailer.createTransport({
-            service: 'outlook',
+            service: 'gmail',
             auth: {
-                user: 'sldwebapp@outlook.com', //Replace with the email you want to send from
-                pass: 'farziemail@474' //Password for the email
+                user: 'sldappuser@gmail.com', //Replace with the email you want to send from
+                pass: 'alszbgyqiersshdq' //Password for the email
             }
         });
 
         //Email options
         let mailOptions = {
-            from: 'sldwebapp@outlook.com', //Replace with the email you want to send from
+            from: 'sldappuser@gmail.com', //Replace with the email you want to send from
             to: practitionerEmail,
             subject: 'Patient Account Details',
             text: `Here are the account details for the newly registered patient:
@@ -78,7 +78,7 @@ router.post('/addPatientFormData', async (req, res) => {
                     Username: ${req.body.patientId}
                     Password: ${generatedPassword}
 
-                    Please keep these credentials safe and do not share them with anyone.`
+            Please keep these credentials safe and do not share them with anyone.`
         };
 
         //send the email and return the response

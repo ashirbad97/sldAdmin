@@ -1,19 +1,3 @@
-//Dark mode toggle
-document.addEventListener('DOMContentLoaded', () => {
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  const body = document.body;
-
-  const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-  if (prefersDarkScheme.matches) {
-    body.classList.add('dark-mode');
-    darkModeToggle.checked = true;
-  }
-
-  darkModeToggle.addEventListener('change', () => {
-    body.classList.toggle('dark-mode');
-  });
-});
-
 document.addEventListener("DOMContentLoaded", () => {
   const patientForm = document.getElementById("patientForm");
 
@@ -21,11 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
   patientForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    // Show loading spinner and disable submit button
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const submitButton = patientForm.querySelector("button[type='submit']");
+
+    // Fade the submit button and show the loading spinner
+    submitButton.style.opacity = "0.5";
+    submitButton.style.pointerEvents = "none";
+    loadingSpinner.style.display = "inline-block";
+
     const formData = new FormData(patientForm);
     const data = Object.fromEntries(formData.entries());
-
-    //Parse tokens input as an array of objects
-    data.tokens = data.tokens.split(',').map(token => ({ token: token.trim() }));
 
     try {
       const response = await fetch("/addPatientFormData", {
@@ -37,6 +27,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const responseData = await response.json();
+
+      // Unfade the submit button and hide the loading spinner
+      submitButton.style.opacity = "1";
+      submitButton.style.pointerEvents = "auto";
+      loadingSpinner.style.display = "none";
 
       //Handle response
       if (response.status === 200) {
@@ -51,9 +46,18 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         alert("Failed to submit the form. Please try again.");
       }
+      // Hide loading spinner and enable submit button when done
+      loadingSpinner.style.display = "none";
+      submitButton.disabled = false;
     } catch (error) {
       console.error("Error submitting the form:", error);
       alert("An error occurred. Please try again.");
+
+    // Unfade the submit button and hide the loading spinner in case of error
+    submitButton.style.opacity = "1";
+    submitButton.style.pointerEvents = "auto";
+    loadingSpinner.style.display = "none";
+
     }
   });
 });

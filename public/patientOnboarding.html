@@ -5,16 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Patient Data Form</title>
   <link rel="stylesheet" href="styles.css">
-  <script defer src="darkMode.js"></script>
+  <script defer src="script.js"></script>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>Patient Data Form</h1>
-      <label class="switch">
-        <input type="checkbox" id="darkModeToggle">
-        <span class="slider"></span>
-      </label>
     </header>
     
     <form id="patientForm">
@@ -61,11 +57,10 @@
       <label for="currentLevel">Current Level:</label>
       <input type="text" id="currentLevel" name="currentLevel" required>
   
-      <label for="tokens">Tokens:</label>
-      <input type="text" id="tokens" name="tokens" required>
-        
-  
-      <button type="submit">Submit</button>
+      <div class="submit-wrapper">
+        <button type="submit">Submit</button>
+        <div id="loadingSpinner" class="loading-spinner" style="display: none;"></div>
+      </div>
     </form>
 
   </div>
