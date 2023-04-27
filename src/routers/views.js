@@ -40,25 +40,16 @@ router.post('/addPatientFormData', async (req, res) => {
         //set this variable to the email of the practitioner
         const practitionerEmail = "defozex47@gmail.com";
 
-        //Generates a random password
-        const generatedPassword = passwordGenerator.generate({
-            length: 10,
-            numbers: true,
-            uppercase: true,
-            lowercase: true,
-            symbols: true
-        });
-
 
         //Save the patient with the generated password
         const patient = new Patient({
             ...req.body,
-            password: generatedPassword,
             currentLevel
         });
         await patient.save();
         credentials = await Patient.findOne({ patientId: req.body.patientId }).select('patientId password');
-
+        const {password} = credentials;
+        
         //Set up the email transporter
         let transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -74,10 +65,9 @@ router.post('/addPatientFormData', async (req, res) => {
             to: practitionerEmail,
             subject: 'Patient Account Details',
             text: `Here are the account details for the newly registered patient:
-
+                    
                     Username: ${req.body.patientId}
-                    Password: ${generatedPassword}
-
+                    Password: ${password}
             Please keep these credentials safe and do not share them with anyone.`
         };
 

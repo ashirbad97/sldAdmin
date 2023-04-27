@@ -33,31 +33,34 @@ document.addEventListener("DOMContentLoaded", () => {
       submitButton.style.pointerEvents = "auto";
       loadingSpinner.style.display = "none";
 
-      //Handle response
+      // Handle response
+      const alertModalBody = document.getElementById("alertModalBody");
       if (response.status === 200) {
         if (responseData.emailStatus === "Success") {
-          alert("Form submitted successfully. Email sent.");
+          alertModalBody.innerHTML = '<div class="alert alert-success" role="alert">Form submitted successfully. Email sent.</div>';
         } else {
-          alert("Form submitted successfully. Failed to send email.");
+          alertModalBody.innerHTML = '<div class="alert alert-danger" role="alert">Form submitted successfully. Failed to send email.</div>';
         }
         patientForm.reset();
       } else if (response.status === 401) {
-        alert(responseData.error);
+        alertModalBody.innerHTML = '<div class="alert alert-danger" role="alert">' + responseData.error + '</div>';
       } else {
-        alert("Failed to submit the form. Please try again.");
+        alertModalBody.innerHTML = '<div class="alert alert-danger" role="alert">Failed to submit the form. Please try again.</div>';
       }
-      // Hide loading spinner and enable submit button when done
-      loadingSpinner.style.display = "none";
-      submitButton.disabled = false;
+      // Show the alert modal
+      $("#patientAdditionAlert").modal("show");
+
     } catch (error) {
       console.error("Error submitting the form:", error);
-      alert("An error occurred. Please try again.");
+      alertModalBody.innerHTML = '<div class="alert alert-danger" role="alert">An error occurred. Please try again.</div>';
 
-    // Unfade the submit button and hide the loading spinner in case of error
-    submitButton.style.opacity = "1";
-    submitButton.style.pointerEvents = "auto";
-    loadingSpinner.style.display = "none";
+      // Show the alert modal
+      $("#patientAdditionAlert").modal("show");
 
+      // Unfade the submit button and hide the loading spinner in case of error
+      submitButton.style.opacity = "1";
+      submitButton.style.pointerEvents = "auto";
+      loadingSpinner.style.display = "none";
     }
   });
 });
